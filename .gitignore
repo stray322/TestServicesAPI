@@ -1,0 +1,8 @@
+target/
+
+### IntelliJ IDEA ###
+.idea
+
+# Allure
+allure-results/
+allure-report/
