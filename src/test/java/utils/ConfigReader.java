@@ -1,6 +1,7 @@
 package utils;
 
 import io.qameta.allure.Allure;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -13,12 +14,12 @@ import java.util.Properties;
  * - Централизованный доступ к настройкам
  * - Интеграцию с системой отчётности Allure
  */
+
 public class ConfigReader{
     private static final Properties properties = new Properties();
-
     static {
+
         try (InputStream input = ConfigReader.class.getClassLoader().getResourceAsStream("config.properties")) {
-            Allure.step("Инициализация конфигурации");
 
             if (input == null) {
                 String errorMsg = "Файл config.properties не найден в classpath";
