@@ -1,7 +1,6 @@
 package tests;
 
 import io.qameta.allure.Allure;
-import io.qameta.allure.Step;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -37,8 +36,7 @@ public class BaseTest{
      * 1. Настройку базовых параметров запроса
      * 2. Логирование параметров в Allure-отчёт
      */
-    @BeforeClass
-    @Step("Настройка базовой спецификации запроса")
+    @BeforeClass(description = "Настройка базовой спецификации запроса")
     public void setup() {
         configureRequestSpec();
         logSpecDetailsToAllure();

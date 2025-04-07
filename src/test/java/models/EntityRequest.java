@@ -1,38 +1,16 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.util.List;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntityRequest {
-    @JsonProperty("title")
-    private String title;
-
-    @JsonProperty("verified")
-    private boolean verified;
-
-    @JsonProperty("importantNumbers")
-    private List<Integer> importantNumbers;
-
+public class EntityRequest extends EntityBase{
     @JsonProperty("addition")
-    private Addition addition;
-
-    @Data
-    @Builder(toBuilder = true)
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Addition {
-        @JsonProperty("additionalInfo")
-        private String additionalInfo;
-
-        @JsonProperty("additionalNumber")
-        private int additionalNumber;
-    }
+    private AdditionRequest addition;
 }

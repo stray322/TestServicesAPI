@@ -2,17 +2,17 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntityResponse extends EntityBase {
+public class AdditionResponse {
     @JsonProperty("id")
     private Integer id;
     @JsonProperty("addition")
-    private AdditionResponse addition;
+    private AdditionRequest addition;
 }

@@ -6,13 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Data
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntityResponse extends EntityBase {
-    @JsonProperty("id")
-    private Integer id;
-    @JsonProperty("addition")
-    private AdditionResponse addition;
+public class EntityBase {
+    @JsonProperty("title")
+    private String title;
+
+    @JsonProperty("verified")
+    private boolean verified;
+
+    @JsonProperty("importantNumbers")
+    private List<Integer> importantNumbers;
 }

@@ -1,12 +1,19 @@
 package tests;
 
 import io.qameta.allure.*;
+import models.AdditionRequest;
 import models.EntityRequest;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import utils.APIEndpoints;
+
 import java.util.List;
+
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.testng.Assert.assertTrue;
 
 @Epic("API Тесты для работы с сущностями")
 @Feature("CRUD операций с сущностями")
@@ -20,7 +27,7 @@ public class EntityApiTest extends BaseTest {
                 .title("Test Entity " + System.currentTimeMillis())
                 .verified(true)
                 .importantNumbers(List.of(1, 2, 3))
-                .addition(EntityRequest.Addition.builder()
+                .addition(AdditionRequest.builder()
                         .additionalInfo("Тестовые данные")
                         .additionalNumber(42)
                         .build())
@@ -40,9 +47,10 @@ public class EntityApiTest extends BaseTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
+                .body(notNullValue())
                 .extract()
-                .body().
-                asString());
+                .body()
+                .asString());
     }
 
     @Test(dependsOnMethods = "createEntityTest", alwaysRun = true)
@@ -50,8 +58,7 @@ public class EntityApiTest extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Description("Проверка получения данных сущности")
     public void getEntityTest() {
-        createEntityTest();
-              given()
+        given()
                 .spec(requestSpec)
                 .pathParam("id", entityId)
                 .when()
@@ -59,8 +66,9 @@ public class EntityApiTest extends BaseTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .body("title", equalTo(testEntity.getTitle()));;
-
+                .body("title", equalTo(testEntity.getTitle()))
+                .body("verified", equalTo(testEntity.isVerified()))
+                .body("addition.id", equalTo(entityId));
     }
 
     @Test(dependsOnMethods = "createEntityTest")
@@ -68,7 +76,6 @@ public class EntityApiTest extends BaseTest {
     @Severity(SeverityLevel.NORMAL)
     @Description("Проверка обновления данных сущности")
     public void updateEntityTest() {
-        createEntityTest();
         EntityRequest updateData = testEntity.toBuilder()
                 .title("Обновленный заголовок")
                 .verified(false)
@@ -78,8 +85,10 @@ public class EntityApiTest extends BaseTest {
                 .spec(requestSpec)
                 .pathParam("id", entityId)
                 .body(updateData)
+                .log().all()
                 .patch(APIEndpoints.UPDATE_ENDPOINT)
                 .then()
+                .log().all()
                 .statusCode(204);
 
         given()
@@ -88,7 +97,8 @@ public class EntityApiTest extends BaseTest {
                 .get(APIEndpoints.GET_ENDPOINT)
                 .then()
                 .body("title", equalTo("Обновленный заголовок"))
-                .body("verified",equalTo(false));
+                .body("verified", equalTo(false))
+                .body("addition.id", equalTo(entityId));
     }
 
     @Test(dependsOnMethods = {"createEntityTest", "getEntityTest"})
@@ -119,20 +129,20 @@ public class EntityApiTest extends BaseTest {
     @Description("Проверка получения списка сущностей")
     public void getAllEntitiesTest() {
         createEntityTest();
-        Allure.addAttachment("Количество сущностей", String.valueOf(
-         given()
+        Integer count = given()
                 .spec(requestSpec)
                 .queryParam("page", 1)
                 .queryParam("limit", 10)
-                 .when()
+                .when()
                 .get(APIEndpoints.GET_ALL_ENDPOINT)
-                 .then()
-                 .assertThat()
-                 .statusCode(200)
-                 .extract()
-                 .jsonPath()
-                 .getList("entity.id")
-                 .size()));
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList("entity.id")
+                .size();
+        assertTrue(count > 0, "Список сущностей пуст");
     }
 
     @AfterClass
